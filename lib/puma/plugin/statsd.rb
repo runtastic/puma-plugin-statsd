@@ -127,11 +127,13 @@ Puma::Plugin.create do
     #
     # Examples: simple-tag-0 tag-key-1:tag-value-1
     #
-    tags = []
-
-    if ENV.has_key?("MY_POD_NAME")
-      tags << "pod_name:#{ENV['MY_POD_NAME']}"
-    end
+    tags = [
+      "k8s_node_name:#{ENV['K8S_NODE_NAME']}",
+      "k8s_pod_name:#{ENV['K8S_POD_NAME']}",
+      "k8s_pod_namespace:#{ENV['K8S_POD_NAMESPACE']}",
+      "environment:#{ENV["ENVIRONMENT"]}",
+      "service:#{ENV["SERVICE_NAME"]}"
+    ]
 
     if ENV.has_key?("STATSD_GROUPING")
       tags << "grouping:#{ENV['STATSD_GROUPING']}"
