@@ -1,7 +1,8 @@
 # Puma Statsd Plugin
 
-[Puma][puma] integration with [statsd](statsd) for easy tracking of key metrics
-that puma can provide:
+[Puma][puma] integration with [statsd](statsd), using the 
+[dogstatsd-ruby](dogstatsd-ruby) client for easy tracking 
+of key metrics that puma can provide:
 
 * puma.workers
 * puma.booted_workers
@@ -9,9 +10,11 @@ that puma can provide:
 * puma.backlog
 * puma.pool_capacity
 * puma.max_threads
+* puma.requests_count (**puma 5.0.0**)
 
   [puma]: https://github.com/puma/puma
   [statsd]: https://github.com/etsy/statsd
+  [dogstatsd-ruby]: https://github.com/DataDog/dogstatsd-ruby
 
 ## Installation
 
@@ -47,46 +50,28 @@ STATSD_HOST=127.0.0.1 bundle exec puma
 STATSD_HOST=127.0.0.1 STATSD_PORT=9125 bundle exec puma
 ```
 
-### Datadog Integration
+### Runtastic Tags
 
-metric tags are a non-standard addition to the statsd protocol, supported by
-the datadog "dogstatsd" server.
+The following tags are reported using the ENV variables available in Runtastic's ruby service images.
 
-Should you be reporting the puma metrics to a dogstatsd server, you can set
-tags via the following three environment variables.
+* `"k8s_node_name:#{ENV['K8S_NODE_NAME']}"`
+* `"k8s_pod_name:#{ENV['K8S_POD_NAME']}"`
+* `"k8s_pod_namespace:#{ENV['K8S_POD_NAMESPACE']}"`
+* `"environment:#{ENV["ENVIRONMENT"]}"`
+* `"service:#{ENV["SERVICE_NAME"]}"`
 
+### EXTRA_TAGS
 
-#### DD_TAGS
+`EXTRA_TAGS`: Set this to a space-separated list of tags.
 
-`DD_TAGS`: Set this to a space-separated list of tags, using the
-[datadog agent standard format](https://docs.datadoghq.com/agent/docker/?tab=standard#global-options).
-
-For example, you could set this environment variable to set three datadog tags,
-and then you can filter by in the datadog interface:
+For example, you could set this environment variable to set the following tags:
 
 ```bash
-export DD_TAGS="env:test simple-tag-0 tag-key-1:tag-value-1"
+export EXTRA_TAGS="env:test simple-tag-0 tag-key-1:tag-value-1"
 bundle exec rails server
 ```
 
-#### MY_POD_NAME
-
-`MY_POD_NAME`: Set a `pod_name` tag to the metrics. The `MY_POD_NAME`
-environment variable is recommended in the datadog kubernetes setup
-documentation, and for puma apps deployed to kubernetes it's very helpful to
-have the option to report on specific pods.
-
-You can set it on your pods like this:
-
-```yaml
-env:
-  - name: MY_POD_NAME
-    valueFrom:
-      fieldRef:
-        fieldPath: metadata.name
-```
-
-#### STATSD_GROUPING
+### STATSD_GROUPING
 
 `STATSD_GROUPING`: add a `grouping` tag to the metrics, with a value equal to
 the environment variable value. This is particularly helpful in a kubernetes
@@ -103,7 +88,7 @@ env:
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-https://github.com/yob/puma-plugin-statsd.
+https://github.com/runtastic/puma-plugin-statsd.
 
 ## Testing the data being sent to statsd
 
@@ -124,10 +109,9 @@ Watch the output of the UDP server process - you should see statsd data printed 
 
 ## Acknowledgements
 
-This gem is a fork of the excellent [puma-plugin-systemd][puma-plugin-systemd] by
-Samuel Cochran.
+This gem is a fork of the excellent [puma-plugin-statsd][puma-plugin-statsd] by James Healy.
 
-  [puma-plugin-systemd]: https://github.com/sj26/puma-plugin-systemd
+  [puma-plugin-statsd]: https://github.com/yob/puma-plugin-statsd
 
 Other puma plugins that were helpful references:
 
