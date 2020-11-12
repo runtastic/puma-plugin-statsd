@@ -50,7 +50,7 @@ STATSD_HOST=127.0.0.1 bundle exec puma
 STATSD_HOST=127.0.0.1 STATSD_PORT=9125 bundle exec puma
 ```
 
-### Rustastic Tags
+### Runtastic Tags
 
 The following tags are reported using the ENV variables available in Runtastic's ruby service images.
 
