@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "puma", ">= 3.12", "< 6"
   spec.add_runtime_dependency "json"
-  spec.add_runtime_dependency "dogstatsd-ruby"
+  spec.add_runtime_dependency "dogstatsd-ruby", "< 5"
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
