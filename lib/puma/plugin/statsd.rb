@@ -29,7 +29,7 @@ Puma::Plugin.create do
     @launcher = launcher
     host = ENV.fetch("STATSD_HOST", nil)
     port = ENV.fetch("STATSD_PORT", 8125)
-    
+
     if host
       @statsd_client = Datadog::Statsd.new(host, port, tags: environment_variable_tags)
       @launcher.events.debug "statsd: enabled (host: #{host})"
@@ -50,15 +50,13 @@ Puma::Plugin.create do
       begin
         stats = ::PumaStats.new(fetch_stats)
 
-        @statsd_client.batch do |s|
-          s.gauge('puma.workers', stats.count_value_for_key(:workers, 1))
-          s.gauge('puma.booted_workers', stats.count_value_for_key(:booted_workers, 1))
-          s.gauge('puma.running', stats.count_value_for_key(:running))
-          s.gauge('puma.backlog', stats.count_value_for_key(:backlog))
-          s.gauge('puma.pool_capacity', stats.count_value_for_key(:pool_capacity))
-          s.gauge('puma.max_threads', stats.count_value_for_key(:max_threads))
-          s.gauge('puma.requests_count', stats.count_value_for_key(:requests_count))
-        end
+        @statsd_client.gauge('puma.workers',        stats.count_value_for_key(:workers, 1))
+        @statsd_client.gauge('puma.booted_workers', stats.count_value_for_key(:booted_workers, 1))
+        @statsd_client.gauge('puma.running',        stats.count_value_for_key(:running))
+        @statsd_client.gauge('puma.backlog',        stats.count_value_for_key(:backlog))
+        @statsd_client.gauge('puma.pool_capacity',  stats.count_value_for_key(:pool_capacity))
+        @statsd_client.gauge('puma.max_threads',    stats.count_value_for_key(:max_threads))
+        @statsd_client.gauge('puma.requests_count', stats.count_value_for_key(:requests_count))
       rescue StandardError => e
         @launcher.events.error "! statsd: notify stats failed:\n  #{e.to_s}\n  #{e.backtrace.join("\n    ")}"
       ensure
