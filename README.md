@@ -22,7 +22,7 @@ Add this gem to your Gemfile with puma and then bundle:
 
 ```ruby
 gem "puma"
-gem "puma-plugin-statsd"
+gem "puma-plugin-statsd", git: "https://github.com/runtastic/puma-plugin-statsd"
 ```
 
 Add it to your puma config:
